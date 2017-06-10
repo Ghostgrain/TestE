@@ -6,7 +6,18 @@
   </head>
   <meta charset="utf-8">
   <body>
-  <a href="/users/login">登录</a>
-  <a href="#">注册</a>
+  当前访客身份：
+  <%= user?user.name:"游客"%>
+  <%
+  if(user){
+  %>
+  [ <a href="/logout">退出</a> ]
+  <%
+  }else{
+  %>
+  [ <a href="/login">登录</a> | <a href="/reg">注册</a> ]
+  <%
+  }
+  %>
   </body>
 </html>
