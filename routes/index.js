@@ -19,6 +19,8 @@ router.get('/test', function(req, res, next){
 router.get('/login', users.login);
 router.get('/doLogin', users.doLogin);
 router.get('/logout', users.logOut);
-
+router.get('/reg', users.reg);
+router.post('/doReg', users.doReg);
+router.get('/check_name', users.check_name);
 module.exports = router;
 

@@ -12,26 +12,50 @@ exports.login = function(req, res, next){
 
 /* do Login*/
 exports.doLogin = function(req, res, next){
-    console.log(req.body);
-    //var name = req.body.username;
-    //var pwd = req.body.pwd;
-    //
-    //userModule.check_access(name, pwd, function( result){
-    //    {
-    //        if(result.length > 0){
-    //            var user = result[0];
-    //            req.session.loginUser = user;
-    //            res.redirect('/index');
-    //
-    //        }else{
-    //            res.render('/login',{flag:true});
-    //        }
-    //    }
-    //
-    //});
+
+    var name = req.query.username;
+    var pwd = req.query.pwd;
+    userModule.check_access(name, pwd, function( result){
+        {
+            if(result.length > 0){
+                var user = result[0];
+                req.session.loginUser = user;
+                res.redirect('/index');
+            }else{
+                res.redirect('/login');
+            }
+        }
+
+    });
 };
 /* do logout*/
 exports.logOut = function(req, res, next){
     req.session.loginUser = null;
     res.render('index',{user:req.session.loginUser});
 };
+exports.reg = function(req, res, next){
+    res.render('regPage');
+}
+exports.doReg = function(req, res, next){
+    //console.log(req.body);
+    var name = req.body.username;
+    var pwd = req.body.pwd;
+    userModule.check_name(name, function(data){
+        if(data.length > 0) {
+            res.end('<h1>error :Attempting to register an existing user!!! </h1>');
+        }else{
+            userModule.reg(name, pwd, function(result){
+                console.log(result);
+            });
+        }
+    })
+}
+exports.check_name = function(req, res, next){
+    userModule.check_name(req.query.name, function(data){
+        if(data.length > 0) {
+            res.end('rename');
+        }else{
+            res.end('no_re_name');
+        }
+    })
+}
