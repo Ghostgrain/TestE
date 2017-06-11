@@ -2,14 +2,14 @@
 <html>
   <head>
     <title>首页</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/css/style.css' />
   </head>
   <meta charset="utf-8">
   <body>
   当前访客身份：
-  <%= user?user.name:"游客"%>
+  <%= locals.user?user.name:"游客"%>
   <%
-  if(user){
+  if(locals.user){
   %>
   [ <a href="/logout">退出</a> ]
   <%

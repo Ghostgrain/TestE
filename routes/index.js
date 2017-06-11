@@ -6,8 +6,19 @@ var users = require('../controllers/users');
 router.get('/', function(req, res, next) {
   res.render('index');
 });
+
 router.get('/index', function(req, res, next) {
   res.render('index',{user:req.session.loginUser});
 });
+
+router.get('/test', function(req, res, next){
+  res.render('test');
+  //res.render('test',{user:undefined});
+});
+
 router.get('/login', users.login);
+router.get('/doLogin', users.doLogin);
+router.get('/logout', users.logOut);
+
 module.exports = router;
+
