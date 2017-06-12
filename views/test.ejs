@@ -5,10 +5,10 @@
     <title></title>
 </head>
 <body>
-<%= locals.user?user : "游客"%>
-<%
-    if(locals){console.log(locals);}
- %>
-游客
+<form action="/upload" enctype="multipart/form-data" method="post">
+    <input type="text" name="title"/><br/>
+    <input type="file" name="upload" multiple="multiple"/><br/>
+    <input type="submit" value="Upload"/>
+</form>
 </body>
 </html>
