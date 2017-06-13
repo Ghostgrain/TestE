@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var cookieSession = require("cookie-session");
 var session = require('express-session');
+var formidable = require('formidable');
 var index = require('./routes/index');
 var users = require('./routes/users');
 

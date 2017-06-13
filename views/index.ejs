@@ -11,13 +11,15 @@
   <%
   if(locals.user){
   %>
-  [ <a href="/logout">退出</a> ]
+   <a href="/logout">退出</a>
+  <img src="<%= user.img_src %>" alt="这TM是张图片"/>
   <%
   }else{
   %>
-  [ <a href="/login">登录</a> | <a href="/reg">注册</a> ]
+   <a href="/login">登录</a> | <a href="/reg">注册</a>
   <%
   }
   %>
+  <a href="/test">上传测试</a>
   </body>
 </html>

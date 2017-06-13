@@ -1,13 +1,15 @@
 /**
  * Created by xiaochaochao on 2017/6/9.
  */
-var userModule = require('../modules/users_modules')
+var userModule = require('../modules/users_modules');
+var util = require('util');
+
 exports.index = function(req, res, next){
-    console.log(req.session.loginUser);
+    //console.log(req.session.loginUser);
+    res.render('index');
 };
 exports.login = function(req, res, next){
     res.render('login');
-    console.log(flag);
 };
 
 /* do Login*/
@@ -18,7 +20,7 @@ exports.doLogin = function(req, res, next){
     userModule.check_access(name, pwd, function( result){
         {
             if(result.length > 0){
-                var user = result[0];
+                var user = {id:result[0].id, name: result[0].name};
                 req.session.loginUser = user;
                 res.redirect('/index');
             }else{
@@ -58,4 +60,16 @@ exports.check_name = function(req, res, next){
             res.end('no_re_name');
         }
     })
+}
+exports.upload = function(req,res,next){
+    if(req.session){
+        userModule.upload_file(req, function(result){
+            console.log(result);
+            res.writeHead(200, {'Content-type': 'text/html;charset="utf-8'});
+            res.end("<h1>恭喜你,你TM上传成功了!</h1>")
+        });
+    }else{
+        res.render('login');
+    }
+
 }
