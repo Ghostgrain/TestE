@@ -20,7 +20,7 @@ exports.doLogin = function(req, res, next){
     userModule.check_access(name, pwd, function( result){
         {
             if(result.length > 0){
-                var user = {id:result[0].id, name: result[0].name};
+                var user = {id:result[0].id, name: result[0].name, img_src: result[0].img_src};
                 req.session.loginUser = user;
                 res.redirect('/index');
             }else{
@@ -64,9 +64,10 @@ exports.check_name = function(req, res, next){
 exports.upload = function(req,res,next){
     if(req.session){
         userModule.upload_file(req, function(result){
-            console.log(result);
-            res.writeHead(200, {'Content-type': 'text/html;charset="utf-8'});
-            res.end("<h1>恭喜你,你TM上传成功了!</h1>")
+            //console.log(result);
+            //res.writeHead(200, {'Content-type': 'text/html;charset="utf-8'});
+            //res.end("<h1>恭喜你,你TM上传成功了!</h1>")
+            res.redirect('/index');
         });
     }else{
         res.render('login');

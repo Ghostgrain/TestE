@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<head>
+    <meta charset="utf-8">
+    <title>菜鸟教程(runoob.com)</title>
 </head>
 <body>
+
+<p>图片应用:</p>
+<img id="scream" src="111.png" style="height: 160px">
+<p>画布:</p>
+<canvas id="myCanvas" width="160" height="160" style="border:1px solid #d3d3d3;">
+    您的浏览器不支持 HTML5 canvas 标签。
+</canvas>
+<script>
+    document.getElementById("scream").onload=function()
+    {
+        var c=document.getElementById("myCanvas");
+        var ctx=c.getContext("2d");
+        var img=document.getElementById("scream");
+        ctx.drawImage(img,0,0,160,160,0,0,160,160);
+    };
+</script>
 
 </body>
 </html>

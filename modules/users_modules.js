@@ -20,6 +20,16 @@ exports.reg = function(name, pwd, callback){
     query(sql,[name,pwd], callback);
 }
 exports.upload_file = function(req, callback){
+    //var reqOrigin = req.header("origin");
+
+      //if(reqOrigin !=undefined && reqOrigin.indexOf("http://localhost:3000") > -1){
+      //    //设置允许 http://localhost:3000 这个域响应
+      //      res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+      //      res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+      //      res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+      //    }
+
+
     // parse a file upload
     var form = new formidable.IncomingForm();
     //设置编辑
@@ -49,13 +59,11 @@ exports.upload_file = function(req, callback){
                 }
             });
 
-
-            ////console.log(files.upload.path);
-
-            var path = files.upload.path.slice(7);
-            var uid = req.session.loginUser.id;
-            var sql = "update user set img_src=? where id=?";
-            query(sql,[path,uid], callback);
+            console.log(files);
+            //var path = files.upload.path.slice(7);
+            //req.session.loginUser.img_src = path;
+            //var sql = "update user set img_src=? where id=?";
+            //query(sql,[path,uid], callback);
         }
     );
 
