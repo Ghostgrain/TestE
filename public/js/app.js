@@ -27,5 +27,6 @@ function T(target){
     require(['./upload_avatar'],function(UploadAvatar){
         var uploadAvatar = new UploadAvatar();
         uploadAvatar.mkAvatar(target);
+
     });
 }

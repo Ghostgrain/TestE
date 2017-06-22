@@ -7,9 +7,10 @@
 </head>
 <body>
     <div id="avatarContainer">
-        <img src="images/avatar.png" alt="头像" style="width: 160px" id="avatar-mask"/>
-        <input type="file" onchange="T(this,'localhost:3000/file-upload');" name="up_file" id="avatar" style="display: none" accept="image/png,image/jpeg"/>
+        <img src="<%= user.img_src %>" alt="头像" style="width: 160px" id="avatar-mask"/>
+        <input type="file" onchange="T(this);" name="up_file" id="avatar" style="display: none" accept="image/png,image/jpeg"/>
     </div>
-<script src="js/require.js" data-main="js/app.js"></script>
+<script src="js/require.js" data-main="js/app.js">
+</script>
 </body>
 </html>

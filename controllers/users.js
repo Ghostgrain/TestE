@@ -46,8 +46,8 @@ exports.doReg = function(req, res, next){
         if(data.length > 0) {
             res.end('<h1>error :Attempting to register an existing user!!! </h1>');
         }else{
-            userModule.reg(name, pwd, function(result){
-                console.log(result);
+            userModule.reg(name, pwd, function(){
+                res.render('login');
             });
         }
     })
@@ -63,7 +63,7 @@ exports.check_name = function(req, res, next){
 }
 exports.upload = function(req,res,next){
     if(req.session){
-        userModule.upload_file(req, function(result){
+        userModule.upload_file(req, res,function(result){
             //console.log(result);
             //res.writeHead(200, {'Content-type': 'text/html;charset="utf-8'});
             //res.end("<h1>恭喜你,你TM上传成功了!</h1>")

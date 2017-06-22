@@ -1,4 +1,5 @@
 define(function(require, exports, module){
+    /*需要切割图片数据的设置,详情查看canvas属性*/
     var avatarSize = {
         sx:0,
         sy:0,
@@ -6,22 +7,28 @@ define(function(require, exports, module){
         height:160,
         x:0,
         y:0,
-        imgWidth:320,
+        imgWidth:160,
         imgHeight:160
-    }//存放切割后的位矢
+    }
+    /*入口参数配置,controller处理头像上传的控制器,max允许上传图像最大的放大倍数
+    * width切割后的宽度,height:切割后的高度;若是改了,也需改avatarSize的imgWidth,imgHeight
+    * */
     var options = {
-        url:"",
+        controller: "/upload",
+        max: "2",
+        width: 160,
+        height: 160,
     }
     /*UploadAvatar类*/
     function UploadAvatar(target){
 
     }
+    /*对象入口方法*/
     UploadAvatar.prototype.mkAvatar = fileChange;
-    UploadAvatar.prototype.addEvent = addEvent;
     /*图片预览函数*/
     function preview(file, preMask)
     {
-        var prevDiv = document.getElementById('UserAvatarEditor-container');
+        var prevDiv = getById('UserAvatarEditor-container');
         if (file.files && file.files[0])
         {
             var reader = new FileReader();
@@ -31,7 +38,6 @@ define(function(require, exports, module){
                 oImg.style.cssText = "position:absolute;"
                 oImg.onload = function(){
                     var flag = oImg.offsetWidth/oImg.offsetHeight;
-//                    console.log(flag);
                     var container = preMask.parentNode;
 
                     /*确定图片是横放还是竖放,*/
@@ -48,26 +54,21 @@ define(function(require, exports, module){
                     drag(container, oImg);
                 };
 
-//                console.log(oImg.offsetWidth);
-//                prevDiv.innerHTML = '<img src="' + evt.target.result + '" style="width:256px"/>';
                 prevDiv.appendChild(oImg);
 
-                console.log(1111);
             };
             reader.readAsDataURL(file.files[0]);
         }
         else
         {
-//            prevDiv.appendChild(oImg);
             prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
         }
     }
     /*文件大小检测*/
-    function fileChange(target, url){
+    function fileChange(target){
         /*检测上传文件的类型*/
-        options.url = url;
-        var btn = document.getElementById('submit_upload');
-        var imgName = document.getElementById('avatar').value;
+        var btn = getById('submit_upload');
+        var imgName = getById('avatar').value;
         var ext,idx;
 
         if (imgName == ''){
@@ -113,7 +114,8 @@ define(function(require, exports, module){
             doMask(target);
         }
     }
-    function addEvent(ele, event, callback)//监听事件
+    /*监听事件*/
+    function addEvent(ele, event, callback)
     {
         if(ele.addEventListener)
         {ele.addEventListener(event,callback,false);
@@ -170,7 +172,6 @@ define(function(require, exports, module){
         var mask = document.createElement('div');
         mask.id = "mask";
 
-
         /*弹层内容模块*/
         var setAvatar = document.createElement('div');
         setAvatar.id = "setAvatar";
@@ -191,7 +192,7 @@ define(function(require, exports, module){
             document.body.removeChild(setAvatar);
         });
 
-        /*保存按钮*/
+        /*保存按钮,进行切割和上传的调用*/
         var oInput = document.createElement('input');
         oInput.type = "button";
         oInput.value = "保存";
@@ -204,12 +205,16 @@ define(function(require, exports, module){
         addEvent(oInput, "mouseout", function(){
             oInput.style.background = "#0f88eb";
         });
+        /*click保存按钮*/
         addEvent(oInput, "click", function(){
-            var img = document.getElementById("UserAvatarEditor-container").childNodes[1];
+            var img = getById("UserAvatarEditor-container").childNodes[1];
             avatarSize.sx = 48 - img.offsetLeft;
             avatarSize.sy = 48 - img.offsetTop;
-            clipImg(img, avatarSize, options.url);
+            clipImg(img, avatarSize);
+            //var close = getByTag(getById("UserAvatarEditor-container"), 'span');
+            getByTag(getById('setAvatar').childNodes, 'span')[0].click();
         });
+
         /*聚焦框*/
         var preMask = document.createElement("div");
         preMask.style.cssText = "width: 160px;height: 160px;background: transparent;position: absolute;" +
@@ -222,7 +227,7 @@ define(function(require, exports, module){
         slider.type = "range";
         slider.step = "0.01";
         slider.min = "1";
-        slider.max = "2";
+        slider.max = options.max;
         slider.className = "RangeInput";
         slider.value = "1";
         addEvent(slider, "mousemove", function(){
@@ -248,34 +253,43 @@ define(function(require, exports, module){
         setAvatar.appendChild(slider);
         preview(target,preMask);
     }
-    function clipImg(img, options, url){
+    function clipImg(img, avatarSize){
         /*Canvas切割部分*/
         var realSize = realImgSize(img);
         var scaleWidth = realSize.width / img.width;
         var scaleHeight = realSize.height / img.height;
-
+        var newImg = new Image();
+        newImg.src = img.src;
         var clipImgCanvas = document.createElement("canvas");
-        clipImgCanvas.style.width = 160 + "px";
-        clipImgCanvas.style.height = 160 + "px";
-        var ctx = clipImgCanvas.getContext("2d");
-        ctx.drawImage(img, options.sx * scaleWidth, options.sy * scaleHeight, options.width * scaleWidth, options.height * scaleHeight,
-        options.x, options.y, options.imgWidth, options.imgHeight);
-        var fullQuality = clipImgCanvas.toDataURL("image/jpeg", 1.0);
-        var avatar = getByTag(getById('avatarContainer').childNodes, "img");
-        avatar[0].src = fullQuality;
-        avatar[0].style.width = 160 + "px";
-        avatar[0].style.height = 160 + "px";
+        clipImgCanvas.width = options.width ;
+        clipImgCanvas.height = options.height ;
 
-        //var formData = new FormData();
-        //formData.append('avatar', "asdcvsd");
-        //console.log(formData.get('avatar'));
-        var request = new XMLHttpRequest();
-        request.open("POST", "http://localhost:3000/file-upload", true);
-        request.send({imgData:fullQuality});
-        //(url ,fullQuality);
-        //img.style.zIndex = 999;
-        //document.body.appendChild(clipImgCanvas);
-        //return fullQuality;
+        var ctx = clipImgCanvas.getContext("2d");
+            ctx.drawImage(newImg, avatarSize.sx * scaleWidth, avatarSize.sy * scaleHeight, avatarSize.width * scaleWidth,
+                avatarSize.height * scaleHeight, avatarSize.x, avatarSize.y, avatarSize.imgWidth, avatarSize.imgHeight);
+            var fullQuality = clipImgCanvas.toDataURL("image/jpeg", 1.0);
+            var avatar = getByTag(getById('avatarContainer').childNodes, "img");
+            avatar[0].src = fullQuality;
+
+        /*头像上传部分*/
+        upload_file(fullQuality, baseUrl()+options.controller)
+        return fullQuality;
+    }
+    function upload_file(img, url){
+        var formData = new FormData();
+        formData.append('avatar', img);
+        var request=null;
+        if (window.XMLHttpRequest)
+        {// code for IE7, Firefox, Opera, etc.
+            request=new XMLHttpRequest();
+        }
+        else if (window.ActiveXObject)
+        {// code for IE6, IE5
+            request=new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        request.open("POST", baseUrl()+options.controller, true);
+        request.send(formData);
+
     }
     function realImgSize(img){
         var real_width,
@@ -286,12 +300,14 @@ define(function(require, exports, module){
             real_height = im.height;
         return {width: real_width,height: real_height};
     }
-
+    /*getDomById*/
     function getById(id){
         return document.getElementById(id);
     }
+    /*getDomByTagName*/
     function getByTag(parent, tagName){
         var arr = [];
+
         tagName = tagName.toUpperCase();
         for(var index in parent){
             if(parent[index].tagName === tagName){
@@ -300,6 +316,9 @@ define(function(require, exports, module){
         }
         return arr;
     }
-
+    /*获取当前项目的根目录(baseUrl)*/
+    function baseUrl(){
+        return (window.location.protocol+"//"+window.location.host);
+    }
     module.exports=UploadAvatar;
 });
