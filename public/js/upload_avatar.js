@@ -35,20 +35,34 @@ define(function(require, exports, module){
             reader.onload = function(evt){
                 var oImg = new Image();
                 oImg.src = evt.target.result;
+
                 oImg.style.cssText = "position:absolute;"
                 oImg.onload = function(){
                     var flag = oImg.offsetWidth/oImg.offsetHeight;
                     var container = preMask.parentNode;
-
                     /*确定图片是横放还是竖放,*/
-                    if(flag >1 ){
+                    var preWidth = oImg.width;
+                    var preHeight = oImg.height;
+                    if(flag >= 1 ){
+                        var x = oImg.height / 160;
+                            oImg.height = 160;
+                        if(preWidth === oImg.width)//说明没有IE没有缩放
+                        {
+                            oImg.width = oImg.width / x;
+                        }
                         oImg.style.cssText += "height: 160px;";
-                    }else if(flag == 1)
-                    {
-                        oImg.style.cssText += "height: 160px";
+                        oImg.dataWidth = oImg.width;
                     }
                     else{
-                        oImg.style.cssText += "width: 160px;"
+                        var x = oImg.width / 160;
+                        oImg.width = 160;
+                        if(preHeight === oImg.height)//说明没有IE没有缩放
+                        {
+                            oImg.height = oImg.height / x;
+                        }
+                        oImg.dataHeight = oImg.height;
+
+                        oImg.style.cssText += "width: 160px;";
                     }
                     oImg.style.cssText += "left: 50%;top: 50%;margin-left: " + -oImg.offsetWidth/2+"px;margin-top:" + -oImg.offsetHeight/2+"px;";
                     drag(container, oImg);
@@ -128,36 +142,15 @@ define(function(require, exports, module){
     function drag(elem, avatar)
     {
         elem.onmousedown = function(e){
-            var left = 48 - parseInt(avatar.style.marginLeft);
-            var top = 48 - parseInt(avatar.style.marginTop);
             /*边界检测*/
-            var boundary = {left:left,right: left - (avatar.offsetWidth - 160),top: top, bottom: top - (avatar.offsetHeight - 160)};
             e = e || window.event;
             var disX = e.clientX - (avatar.offsetLeft - parseInt(avatar.style.marginLeft));
             var disY = e.clientY - (avatar.offsetTop  - parseInt(avatar.style.marginTop)) ;
             document.onmousemove = function(e){
                 e = e || window.event;
-
                 avatar.left = e.clientX - disX;
                 avatar.top = e.clientY - disY;
-                if(avatar.left > boundary.left)
-                {
-                    avatar.left = boundary.left;
-                }else if(avatar.left <= boundary.right){
-                    avatar.left = boundary.right;
-                }
-                if(avatar.top > boundary.top)
-                {
-                    avatar.top = boundary.top;
-                }else if(avatar.top <= boundary.bottom){
-                    avatar.top = boundary.bottom;
-                }
-                avatar.style.left = avatar.left +"px";
-                avatar.style.top = avatar.top + "px";
-                //
-                //avatarSize.sx = 48 - avatar.offsetLeft ;
-                //avatarSize.sy = 48 - avatar.offsetTop ;
-                //clipImg(avatar, avatarSize);
+                boundaryCheck(avatar);
                 return false;
             };
             //clipImg(avatar, avatarSize);
@@ -186,7 +179,7 @@ define(function(require, exports, module){
         /*关闭小按钮*/
         var closeAll = document.createElement('span');
         closeAll.style.cssText = "width:16px;height:16px;line-height:16px;" +
-            ";position:absolute;right:-56px;top:0;padding:14px;background:url(images/close.png);cursor: pointer ";
+            ";position:absolute;right:-56px;top:0;padding:14px;background:url(../images/close.png);cursor: pointer ";
         addEvent(closeAll, "click", function(){
             document.body.removeChild(mask);
             document.body.removeChild(setAvatar);
@@ -230,16 +223,24 @@ define(function(require, exports, module){
         slider.max = options.max;
         slider.className = "RangeInput";
         slider.value = "1";
+
         addEvent(slider, "mousemove", function(){
             var oImg = slider.parentNode.childNodes[1].childNodes[1];
             if(oImg.style.width){
                 oImg.style.width = slider.value * 160 + "px";
+                oImg.height = slider.value * oImg.dataHeight;//兼容IE不能自适应
+
             }else{
                 oImg.style.height = slider.value * 160 + "px";
+                oImg.width = slider.value * oImg.dataWidth;//兼容IE不能自适应
             }
+            oImg.left = parseInt(oImg.style.left);
+            oImg.top = parseInt(oImg.style.top);
+            /*当oImg.style.left=50%用来定位的时候会出某种奇怪的问题,用下面代码避过*/
+            if(oImg.style.left.indexOf("%") === -1 && oImg.style.left.indexOf("%") === -1)
+                boundaryCheck(oImg);
             oImg.style.marginTop = -oImg.offsetHeight/2 + "px";
             oImg.style.marginLeft = -oImg.offsetWidth/2 + "px";
-
         });
 
         /*进行模块的拼接*/
@@ -319,6 +320,27 @@ define(function(require, exports, module){
     /*获取当前项目的根目录(baseUrl)*/
     function baseUrl(){
         return (window.location.protocol+"//"+window.location.host);
+    }
+    function boundaryCheck(avatar){
+        var left = 48 - parseInt(avatar.style.marginLeft);
+        var top = 48 - parseInt(avatar.style.marginTop);
+        var boundary = {left:left,right: left - (avatar.offsetWidth - 160),top: top, bottom: top - (avatar.offsetHeight - 160)};
+        if(avatar.left > boundary.left)
+        {
+            avatar.left = boundary.left;
+            console.log(avatar.left+"||"+boundary.left);
+        }else if(avatar.left <= boundary.right){
+            avatar.left = boundary.right;
+        }
+        if(avatar.top > boundary.top)
+        {
+            avatar.top = boundary.top;
+        }else if(avatar.top <= boundary.bottom){
+            avatar.top = boundary.bottom;
+        }
+        /*防止缩放后图片的预览内容缺失*/
+        avatar.style.left = avatar.left + "px";
+        avatar.style.top = avatar.top + "px";
     }
     module.exports=UploadAvatar;
 });
