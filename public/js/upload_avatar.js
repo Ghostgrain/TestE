@@ -35,18 +35,17 @@ define(function(require, exports, module){
             reader.onload = function(evt){
                 var oImg = new Image();
                 oImg.src = evt.target.result;
-
                 oImg.style.cssText = "position:absolute;"
                 oImg.onload = function(){
                     var flag = oImg.offsetWidth/oImg.offsetHeight;
+                    /*flag确定图片是横放还是竖放的比例*/
                     var container = preMask.parentNode;
-                    /*确定图片是横放还是竖放,*/
                     var preWidth = oImg.width;
                     var preHeight = oImg.height;
                     if(flag >= 1 ){
                         var x = oImg.height / 160;
                             oImg.height = 160;
-                        if(preWidth === oImg.width)//说明没有IE没有缩放
+                        if(preWidth === oImg.width)//IE没有缩放处理
                         {
                             oImg.width = oImg.width / x;
                         }
@@ -56,7 +55,7 @@ define(function(require, exports, module){
                     else{
                         var x = oImg.width / 160;
                         oImg.width = 160;
-                        if(preHeight === oImg.height)//说明没有IE没有缩放
+                        if(preHeight === oImg.height)//IE没有缩放处理
                         {
                             oImg.height = oImg.height / x;
                         }
@@ -153,14 +152,13 @@ define(function(require, exports, module){
                 boundaryCheck(avatar);
                 return false;
             };
-            //clipImg(avatar, avatarSize);
             /*解决按键抬起无法释放的BUG*/
             window.onmouseup = function(){
                 document.onmousemove = null;//取消事件
             }
         };
     }
-    /*图片检测弹层*/
+    /*图片检测弹层*/2
     function doMask(target){
         var mask = document.createElement('div');
         mask.id = "mask";
@@ -212,7 +210,7 @@ define(function(require, exports, module){
         var preMask = document.createElement("div");
         preMask.style.cssText = "width: 160px;height: 160px;background: transparent;position: absolute;" +
             "left: 0;top: 0;";
-        preMask.style.zIndex = 2;
+        preMask.style.zIndex = 2 ;
         preMask.style.border = "48px solid rgba(255, 255, 255, .8)";
 
         /*放大滑块*/
@@ -288,7 +286,7 @@ define(function(require, exports, module){
         {// code for IE6, IE5
             request=new ActiveXObject("Microsoft.XMLHTTP");
         }
-        request.open("POST", baseUrl()+options.controller, true);
+        request.open("POST", url, true);
         request.send(formData);
 
     }
